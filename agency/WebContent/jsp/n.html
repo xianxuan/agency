@@ -1,0 +1,157 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<div class="upload_btn" onclick="fileElem.click()">
+    选择上传图片
+</div><input id="tip" type="text" value="">
+<input class="inputimg" type="file" id="fileElem" multiple accept="image/*" onchange="handleFiles(this)">
+
+<div class="showimgdiv" id="fileList"></div>
+
+<style>
+.showimgdiv{overflow:hidden
+    width:638px;
+    height: 108px;
+    border: 1px solid #ddd;
+    background: #fff;
+    box-shadow: 2px 2px 4px #aaa;
+	
+}
+.upload_btn{
+    padding: 10px;
+    width:120px;
+    height:40px;
+    margin:0 auto;
+    text-align:center;
+    position:relative;
+    z-index:5;
+    cursor: pointer;
+    background: none repeat scroll 0 0 #00B7EE;
+    border-radius: 3px;
+    color: #fff;
+    font-size: 14px;
+    margin-left: 10px;
+    transition: background 0.2s;
+    -moz-transition: background 0.2s;
+    -webkit-transition: background 0.2s;
+    -o-transition: background 0.2s;
+}
+.upload_btn:hover{
+background: none repeat scroll 0 0 #00A2D4;
+}
+.inputimg{
+	height:0px;
+    position:absolute;
+    top:0;
+    left: 0;
+    z-index:11;
+
+    opacity:0;
+    filter:Alpha(opacity=0);
+}
+</style>
+<script>
+	window.URL = window.URL || window.webkitURL;
+	var fileElem = document.getElementById("fileElem"),
+	    fileList = document.getElementById("fileList");
+	var tip = document.getElementById("tip");
+	function handleFiles(obj) {
+        if(fileList.childNodes.length>=6){
+            alert("最多只能上传6张图片哦！");
+            return;
+        }
+		var files = obj.files,
+			img = new Image();
+        var div=document.createElement("div");//创建一个DIV
+        div.style.width="100px";
+        div.style.height="100px";
+        div.style.border="1px solid #111";
+        div.style.margin="2px";
+        div.style.float="left"; 
+        div.style.boxShadow=" 2px 2px 4px #aaa";
+        var imgdelete= new Image();
+        imgdelete.style.width="20px";
+        imgdelete.style.height="20px";
+        /*imgdelete.style.border="1px solid #ccc";*/
+        imgdelete.style.marginLeft="78px";
+        imgdelete.style.position="absolute";
+        imgdelete.style.index="99";
+        imgdelete.src="img/delete_b.png";
+        imgdelete.style.cursor="pointer";
+        imgdelete.onclick = function(){
+            fileList.removeChild(div);
+            tip.value=fileList.childNodes.length;
+        }
+        div.onmousemove=function(){
+            imgdelete.src="img/delete.png";
+        }
+        div.onmouseout=function(){
+            imgdelete.src="img/delete_b.png";
+        }
+        div.appendChild(imgdelete);
+       // div.innerHTML="this is a div";//设置div里面的内容varcreateDiv=document.createElement("div");
+        /*div.onclick = function(){alert(this.innerHTML)}*///添加点击事件
+        /*createDiv.title="thisisanewdiv.";
+        createDiv.id="newDivId";
+        createDiv.class="newDivClass";
+        createDiv.innerHTML="Testcreateadivelement!";
+        document.body.appendChild(createDiv);
+        varcreateDiv=document.createElement("div");
+        createDiv.style.background="pink";
+        createDiv.style.border="1pxsolidred";
+        createDiv.style.width="50px";
+        createDiv.style.height="50px";
+        createDiv.innerHTML="Testcreateadivelement!";*/
+        if(window.URL){
+			//File API
+//			  alert(files[0].name + "," + files[0].size + " bytes");
+		      img.src = window.URL.createObjectURL(files[0]); //����һ��object URL����������ı���·��
+		      img.style.width = "100px";
+		      img.style.height = "100px";
+		      img.onload = function(e) {
+		         window.URL.revokeObjectURL(this.src); //ͼƬ���غ��ͷ�object URL
+		      }
+            div.appendChild(img);
+		    fileList.appendChild(div);
+		    tip.value=fileList.childNodes.length;
+		}else if(window.FileReader){
+			//opera��֧��createObjectURL/revokeObjectURL������������FileReader����������
+			var reader = new FileReader();
+			reader.readAsDataURL(files[0]);
+			reader.onload = function(e){
+//				alert(files[0].name + "," +e.total + " bytes");
+				img.src = this.result;
+				img.style.width = "100px";
+			      img.style.height = "100px";
+                div.appendChild(img);
+                fileList.appendChild(div);
+    		    tip.value=fileList.childNodes.length;
+			}
+		}else{
+			//ie
+			obj.select();
+			obj.blur();
+			var nfile = document.selection.createRange().text;
+			var browserVersion = window.navigator.userAgent.toUpperCase();
+			img.style.width = "100px";
+		    img.style.height ="100px";
+			if (browserVersion.indexOf("MSIE 8") > -1){
+                img.style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod='scale',src='" + document.selection.createRange().text + "')";
+				img.src = nfile;
+			}else
+				img.src = nfile;
+			img.onload=function(){
+		    }
+            div.appendChild(img);
+            fileList.appendChild(div);
+		    tip.value=fileList.childNodes.length;
+			//fileList.style.filter="progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod='image',src='"+nfile+"')";
+		}
+	}
+</script>
+</body>
+</html>
